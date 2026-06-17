@@ -1,0 +1,31 @@
+import java.util.*;
+class Main {
+    public static void main(String[] args) {
+       Scanner sc=new Scanner(System.in);
+       int n;
+       int sum=0;
+       System.out.println("Enter the car number:");
+       n=sc.nextInt();
+       if(n>=1000 && n<=9999)
+       {
+           while(n!=0)
+           {
+               int temp=n%10;
+               sum+=temp;
+               n=n/10;
+           }
+           if( sum%3==0 ||sum%5==0 || sum%7==0)
+           {
+               System.out.println("Lucky number");
+           }
+           else
+           {
+               System.out.println("sorry It's not my lucky number");
+           }
+       }
+       else
+       {
+           System.out.println("%d is not a valid car number",n);
+       }
+    }
+}

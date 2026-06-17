@@ -1,0 +1,79 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.StringTokenizer;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        
+        int t = Integer.parseInt(st.nextToken());
+        StringBuilder sb = new StringBuilder();
+        
+        while (t-- > 0) {
+            st = new StringTokenizer(br.readLine());
+            int n = Integer.parseInt(st.nextToken());
+            int x = Integer.parseInt(st.nextToken());
+            int s = Integer.parseInt(st.nextToken());
+            
+            String characters = br.readLine();
+            int limit = Math.min(n, x);
+            int[][] dp = new int[limit + 2][limit + 2];
+            for (int[] row : dp) {
+                Arrays.fill(row, -1);
+            }
+            dp[0][0] = 0;
+            
+            for (int i = 0; i < n; i++) {
+                char person = characters.charAt(i);
+                int[][] nextDp = new int[limit + 2][limit + 2];
+                for (int[] row : nextDp) {
+                    Arrays.fill(row, -1);
+                }
+                
+                for (int o = 0; o <= limit; o++) {
+                    for (int p = 0; p <= o; p++) {
+                        if (dp[o][p] == -1) continue;
+                        
+                        int T = dp[o][p]; 
+                        int c = T - (o - p) * s; 
+                        nextDp[o][p] = Math.max(nextDp[o][p], T);
+              
+                        if (person == 'I' || person == 'A') {
+                            // Can sit at an empty table
+                            if (o < x && o < limit) {
+                                if (s == 1) {
+                                    nextDp[o + 1][p] = Math.max(nextDp[o + 1][p], T + 1);
+                                                                    } else {
+                                    nextDp[o + 1][p + 1] = Math.max(nextDp[o + 1][p + 1], T + 1);
+                                }
+                            }
+                        }
+                        
+                        if (person == 'E' || person == 'A') {
+                            // Can sit at an active table
+                            if (p > 0) {
+                                if (c == p * (s - 1)) {
+                                    nextDp[o][p - 1] = Math.max(nextDp[o][p - 1], T + 1);
+                                } else {
+                                    nextDp[o][p] = Math.max(nextDp[o][p], T + 1);
+                                }
+                            }
+                        }
+                    }
+                }
+                dp = nextDp;
+            }
+            int maxSeated = 0;
+            for (int o = 0; o <= limit; o++) {
+                for (int p = 0; p <= o; p++) {
+                    maxSeated = Math.max(maxSeated, dp[o][p]);
+                }
+            }
+            sb.append(maxSeated).append("\n");
+        }
+        System.out.print(sb);
+    }
+}

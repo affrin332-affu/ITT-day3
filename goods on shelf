@@ -1,0 +1,119 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        
+        int t = Integer.parseInt(st.nextToken());
+        StringBuilder sb = new StringBuilder();
+        
+        while (t-- > 0) {
+            int n = Integer.parseInt(br.readLine());
+            int[] a = new int[n];
+            st = new StringTokenizer(br.readLine());
+            
+            for (int i = 0; i < n; i++) {
+                a[i] = Integer.parseInt(st.nextToken());
+            }
+            
+            if (solve(a, n)) {
+                sb.append("YES\n");
+            } else {
+                sb.append("NO\n");
+            }
+        }
+        System.out.print(sb);
+    }
+
+    private static boolean solve(int[] a, int n) {
+        Map<Integer, Integer> blockCount = new HashMap<>();
+        int totalBlocks = 1;
+        blockCount.put(a[0], 1);
+        for (int i = 1; i < n; i++) {
+            if (a[i] != a[i - 1]) {
+                totalBlocks++;
+                blockCount.put(a[i], blockCount.getOrDefault(a[i], 0) + 1);
+            }
+        }
+        
+        int uniqueTypes = blockCount.size();
+        if (totalBlocks == uniqueTypes) {
+            return true;
+        }
+        List<Integer> brokenTypes = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : blockCount.entrySet()) {
+            if (entry.getValue() > 1) {
+                brokenTypes.add(entry.getKey());
+                if (entry.getValue() > 3) {
+                    return false;
+                }
+            }
+        }
+    
+        if (brokenTypes.size() > 4) {
+            return false;
+        }
+        
+        Set<Integer> candidates = new HashSet<>();
+        for (int target : brokenTypes) {
+            for (int i = 0; i < n; i++) {
+                if (a[i] == target) {
+                    if (i == 0 || a[i - 1] != target) {
+                        candidates.add(i);
+                        if (i > 0) candidates.add(i - 1);
+                    }
+                    if (i == n - 1 || a[i + 1] != target) {
+                        candidates.add(i);
+                        if (i < n - 1) candidates.add(i + 1);
+                    }
+                }
+            }
+        }
+        
+        List<Integer> candList = new ArrayList<>(candidates);
+        int m = candList.size();
+        for (int i = 0; i < m; i++) {
+            for (int j = i + 1; j < m; j++) {
+                int idx1 = candList.get(i);
+                int idx2 = candList.get(j);
+                Set<Integer> affectedPairs = new HashSet<>();
+                if (idx1 > 0) affectedPairs.add(idx1 - 1);
+                if (idx1 < n - 1) affectedPairs.add(idx1);
+                if (idx2 > 0) affectedPairs.add(idx2 - 1);
+                if (idx2 < n - 1) affectedPairs.add(idx2);
+                
+                int initialMismatches = 0;
+                for (int p : affectedPairs) {
+                    if (a[p] != a[p + 1]) {
+                        initialMismatches++;
+                    }
+                }
+                int temp = a[idx1];
+                a[idx1] = a[idx2];
+                a[idx2] = temp;
+                
+                int finalMismatches = 0;
+                for (int p : affectedPairs) {
+                    if (a[p] != a[p + 1]) {
+                        finalMismatches++;
+                    }
+                }
+                
+                int newTotalBlocks = totalBlocks - initialMismatches + finalMismatches;
+                temp = a[idx1];
+                a[idx1] = a[idx2];
+                a[idx2] = temp;
+                
+                if (newTotalBlocks == uniqueTypes) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+}

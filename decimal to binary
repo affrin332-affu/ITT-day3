@@ -1,0 +1,28 @@
+import java.util.*;
+
+class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        ArrayList<Integer> rem = new ArrayList<>();
+        
+        System.out.println("Enter the number(decimal):");
+        int n = sc.nextInt();
+        while (n > 0) {
+            int r = n % 2;
+            rem.add(r);
+            n = n / 2;
+        }
+        Collections.reverse(rem);
+        System.out.println(rem);
+        if(!rem.contains(1))
+        {
+            System.out.println("Invalid Input");
+        }
+        int count = Collections.frequency(rem, 1);
+        System.out.println("The number of ones are:");
+        System.out.println(count);
+        
+    }
+}
+            
+ 
